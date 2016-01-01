@@ -18,6 +18,7 @@ if __name__ == "__main__":
             left_marg = 50
             top_marg = 150
             win = GraphWin(game, dim + 2*left_marg, dim + top_marg + 50)
+            win.setBackground('white')
 
             if not colors:
                 colors = {names[0]: 'blue', names[1]: 'red'}
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 
                 wins = {n: 0 for n in names}
 
+            scores = {n: 0 for n in names}
             p1.draw(win)
             vs.draw(win)
             p2.draw(win)
@@ -53,7 +55,6 @@ if __name__ == "__main__":
                     c.setFill('black')
                     c.draw(win)
 
-            scores = {n: 0 for n in names}
 
             win.postscript(file=os.path.join(results_dir, '{}.{}.{}.ps').format(f, i, 0), colormode='color')
             for j, (player, entry) in enumerate(game['history'], start=1):
