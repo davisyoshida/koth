@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-from graphics import Circle, GraphWin, Image, Line, Point, Rectangle, Text
+from graphics import Circle, GraphWin, Line, Point, Rectangle, Text
 import json
 import os
 
 if __name__ == "__main__":
     results_dir = 'results'
-    for f in (f for f in os.listdir(results_dir) if os.path.isfile(os.path.join(results_dir, f))):
+    for f in (f for f in os.listdir(results_dir) if f.endswith('.log')):
         hist = json.load(open(os.path.join(results_dir, f)))
         colors = None
         for i, game in enumerate(hist):
@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 colors = {names[0]: 'blue', names[1]: 'red'}
                 p1 = Text(Point(left_marg + dim//2, 20), names[0])
                 p1.setFill(colors[names[0]])
-                score1 = Text(Point(left_marg + dim//4, 50), '0')
+                score1 = Text(Point(left_marg + dim//4, 50), '0:0')
                 score1.setFill(colors[names[0]])
                 score1.setSize(20)
 
@@ -32,11 +32,13 @@ if __name__ == "__main__":
 
                 p2 = Text(Point(left_marg + dim//2, 80), names[1])
                 p2.setFill(colors[names[1]])
-                score2 = Text(Point(left_marg + 3*dim//4, 50), '0')
+                score2 = Text(Point(left_marg + 3*dim//4, 50), '0:0')
                 score2.setFill(colors[names[1]])
                 score2.setSize(20)
 
                 score_text = {names[0]: score1, names[1]: score2}
+
+                wins = {n: 0 for n in names}
 
             p1.draw(win)
             vs.draw(win)
@@ -65,7 +67,7 @@ if __name__ == "__main__":
                     rec.draw(win)
                     scores[player] += 1
                     score_text[player].undraw()
-                    score_text[player].setText(str(scores[player]))
+                    score_text[player].setText('{}:{}'.format(wins[player], scores[player]))
                     score_text[player].draw(win)
                 else:
                     if is_vert:
@@ -74,6 +76,21 @@ if __name__ == "__main__":
                         line = Line(points[r][c], points[r][c+1])
                     line.draw(win)
                     line.setFill(colors[player])
+
                 win.postscript(file=os.path.join(results_dir, '{}.{}.{}.ps').format(f, i, j), colormode='color')
+            (n1, s1), (n2, s2) = scores.items()
+            if s1 > s2:
+                winner = n1
+            elif s2 > s1:
+                winner = n2
+            else:
+                winner = None
+
+            if winner:
+                wins[winner] += 1
+                score_text[winner].undraw()
+                score_text[winner].setText('{}:{}'.format(wins[player], scores[player]))
+                score_text[winner].draw(win)
+            win.postscript(file=os.path.join(results_dir, '{}.{}.{}.ps').format(f, i, j+1), colormode='color')
 
             win.close()

@@ -53,7 +53,7 @@ class Tournament(object):
                     record[res ^ flip] += 1  # If the players are swapped, the indices are reversed
                 print(record)
 
-        with open('results/{}---{}'.format(*names), 'w') as f:
+        with open('results/{}---{}.log'.format(*names), 'w') as f:
             json.dump(games, f)
 
         return None if record[0] == record[1] else names[0] if record[0] > record[1] else names[1]

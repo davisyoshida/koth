@@ -1,2 +1,2 @@
-RandoCalrissian,python,players/RandoCalrissian/rando.py,1
-RandoCalrissian2,python,players/RandoCalrissian/rando.py,2
+RandoCalrissian,python,players/RandoCalrissian/rando.py
+Chewboxxa,python,players/Chewboxxa/chewboxxa.py
