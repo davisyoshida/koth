@@ -9,7 +9,7 @@ class Game:
         self.size = size
 
         self.moves = set()
-        self.repr_moves = ''
+        self.new_moves = [[], []]
 
         self.count = [[0 for _ in range(size)] for _ in range(size)]
 
@@ -50,7 +50,7 @@ class Game:
             raise ValueError("Move in occupied space")
         else:
             self.moves.add((is_vert, row, col))
-            self.repr_moves += ('\n{}:{}:{}'.format('V' if is_vert else 'H', row, col))
+            self.new_moves[1 - player].append('{}:{}:{}\n'.format('V' if is_vert else 'H', row, col))
 
         boxes = []
         if is_vert:
@@ -91,3 +91,8 @@ class Game:
             return None
         else:
             return -1 if self.scores[0] == self.scores[1] else 0 if self.scores[0] > self.scores[1] else 1
+
+    def get_new_moves(self, player):
+        t = self.new_moves[player]
+        self.new_moves[player] = []
+        return t

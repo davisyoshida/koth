@@ -16,6 +16,7 @@ class IOProcess(object):
         self.loop = asyncio.get_event_loop()
         self.setup = setup
         self.timeout = timeout
+        self.cor = self.runner()
 
     @asyncio.coroutine
     def _start_co(self):
@@ -29,10 +30,8 @@ class IOProcess(object):
 
     @asyncio.coroutine
     def _send_co(self, bytes_in):
-        print("Sending")
         self.proc.stdin.write(bytes_in)
         try:
-            print("Getting stdout")
             res = yield from self.proc.stdout.readline()
         except asyncio.CancelledError:
             self.proc.kill()
@@ -43,7 +42,6 @@ class IOProcess(object):
     @asyncio.coroutine
     def _timed_send(self, bytes_in):
         try:
-            print("Waiting")
             result = yield from asyncio.wait_for(self._send_co(bytes_in), loop=self.loop, timeout=3)
         except asyncio.TimeoutError:
             result = None
@@ -51,20 +49,23 @@ class IOProcess(object):
 
         return result
 
-    def send(self, bytes_in):
-        return self.loop.run_until_complete(self._timed_send(bytes_in))
+    @asyncio.coroutine
+    def _runner(self):
+        yield from self._start()
 
-    def end(self):
-        if not self.proc.returncode:
-            self.proc.kill()
-
-    def send_str(self, s):
+    def send_and_receive(self, bytes_in):
         """
         Send a string to the process via stdin, and wait <timeout> seconds for the response.
         Args:
-            s: The string to send. It should have no newlines.
+            bytes_in: A newline terminated bytes object
 
         Returns:
             The string that the process printed, or None if the time limit was exceeded.
         """
-        ...
+        return self.loop.run_until_complete(self._timed_send(bytes_in))
+
+    def send_no_wait(self, bytes_in):
+        self.proc.stdin.write(bytes_in)
+
+    def end(self):
+        self.proc.kill()

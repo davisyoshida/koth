@@ -6,6 +6,7 @@ import itertools
 from operator import itemgetter
 import proc_wrapper
 import sys
+from time import sleep
 import traceback
 
 
@@ -34,16 +35,16 @@ class Tournament(object):
         """
         record = [0, 0]
         for i in range(5):
-            print(record)
             res = self.play(ps, 5 + i//10)
             if res >= 0:
                 record[res] += 1
+            print(record)
 
         for i in range(5):
-            print(record)
             res = self.play(reversed(ps), 5 + i//10)
             if res >= 0:
                 record[1 - res] += 1
+            print(record)
         return None if record[0] == record[1] else ps[0] if record[0] > record[1] else ps[1]
 
     def play(self, names, n):
@@ -63,8 +64,10 @@ class Tournament(object):
         player = 0
         winner = None
         while winner is None:
-            move = procs[player].send(b'MOVE')
-            print("%d: %s" % (player, move.decode('ascii')))
+            for move in g.get_new_moves(player):
+                procs[player].send_no_wait(bytes(move, encoding='ascii'))
+
+            move = procs[player].send_and_receive(b'MOVE\n')
             if not move:
                 winner = 1 - player
                 continue
@@ -78,6 +81,7 @@ class Tournament(object):
 
         for p in procs:
             proc.end()
+        sleep(1)
         return winner
 
 if __name__ == "__main__":
