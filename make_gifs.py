@@ -45,8 +45,9 @@ if __name__ == "__main__":
             p1.draw(win)
             vs.draw(win)
             p2.draw(win)
-            score1.draw(win)
-            score2.draw(win)
+            for player, st in score_text.items():
+                st.setText('{}:{}'.format(wins[player], scores[player]))
+                st.draw(win)
 
             points = [[Point(left_marg + c * dim//size, top_marg + r * dim//size) for c in range(size + 1)] for r in range(size + 1)]
             dots = [[Circle(p, 5) for p in l] for l in points]
@@ -54,7 +55,6 @@ if __name__ == "__main__":
                 for c in l:
                     c.setFill('black')
                     c.draw(win)
-
 
             win.postscript(file=os.path.join(results_dir, '{}.{}.{}.ps').format(f, i, 0), colormode='color')
             for j, (player, entry) in enumerate(game['history'], start=1):
@@ -90,7 +90,7 @@ if __name__ == "__main__":
             if winner:
                 wins[winner] += 1
                 score_text[winner].undraw()
-                score_text[winner].setText('{}:{}'.format(wins[player], scores[player]))
+                score_text[winner].setText('{}:{}'.format(wins[winner], scores[winner]))
                 score_text[winner].draw(win)
             win.postscript(file=os.path.join(results_dir, '{}.{}.{}.ps').format(f, i, j+1), colormode='color')
 
