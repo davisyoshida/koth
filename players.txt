@@ -1,0 +1,2 @@
+RandoCalrissian,python,players/RandoCalrissian/rando.py,1
+RandoCalrissian2,python,players/RandoCalrissian/rando.py,2
