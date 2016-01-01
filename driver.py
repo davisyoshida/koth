@@ -4,6 +4,7 @@ from collections import defaultdict
 from csv import reader
 from game import Game
 import itertools
+import json
 from operator import itemgetter
 import proc_wrapper
 import sys
@@ -29,31 +30,33 @@ class Tournament(object):
         Conduct the tournament
         """
         scores = defaultdict(int)
-        for p0, p1 in itertools.combinations(self.players, 2):
+        for pair in itertools.combinations(self.players, 2):
             # scores[None] if a draw
-            scores[(yield from self.match([p0, p1]))] += 1
+            scores[(yield from self.match(list(sorted(pair))))] += 1
         return scores
 
     @asyncio.coroutine
-    def match(self, ps):
+    def match(self, names):
         """
         Run a series of games between the two given players
         Args:
-            ps: Sequence containing the players
+            names: Sequence containing the players' names
         """
         record = [0, 0]
-        for i in range(5):
-            res = yield from self.play(ps, 5 + i//10)
-            if res >= 0:
-                record[res] += 1
-            print(record)
+        print("Match: " + str(names))
+        games = []
+        for flip in [False, True]:
+            for i in range(5):
+                res, hist = yield from self.play(list(reversed(names)) if flip else names, 5 + i//10)
+                games.append(hist)
+                if res >= 0:
+                    record[res ^ flip] += 1  # If the players are swapped, the indices are reversed
+                print(record)
 
-        for i in range(5):
-            res = yield from self.play(reversed(ps), 5 + i//10)
-            if res >= 0:
-                record[1 - res] += 1
-            print(record)
-        return None if record[0] == record[1] else ps[0] if record[0] > record[1] else ps[1]
+        with open('results/{}---{}'.format(*names), 'w') as f:
+            json.dump(games, f)
+
+        return None if record[0] == record[1] else names[0] if record[0] > record[1] else names[1]
 
     @asyncio.coroutine
     def play(self, names, n):
@@ -68,7 +71,7 @@ class Tournament(object):
 
         for p in procs:
             yield from p.start()
-        g = Game(n)
+        g = Game(n, names)
         player = 0
         winner = None
         while winner is None:
@@ -91,7 +94,7 @@ class Tournament(object):
         for p in procs:
             yield from p.end()
 
-        return winner
+        return winner, g.get_history()
 
 if __name__ == "__main__":
     t = Tournament()

@@ -4,12 +4,13 @@ class Game:
 
     Attributes:
         n: Side length of game board (there will be n^2 boxes)
+        players: Sequence of player names
     """
-    def __init__(self, size):
+    def __init__(self, size, players):
         self.size = size
 
-        self.moves = set()
         self.new_moves = [[], []]
+        self.moves = set()
 
         self.count = [[0 for _ in range(size)] for _ in range(size)]
 
@@ -17,6 +18,9 @@ class Game:
         self.remaining_boxes = size**2
 
         self.next_move = 0
+
+        self.players = players
+        self.history = []
 
     def str_move(self, s, player):
         """
@@ -49,8 +53,11 @@ class Game:
         if (is_vert, row, col) in self.moves:
             raise ValueError("Move in occupied space")
         else:
-            self.moves.add((is_vert, row, col))
-            self.new_moves[1 - player].append('{}:{}:{}\n'.format('V' if is_vert else 'H', row, col))
+            move = is_vert, row, col
+            self.moves.add(move)
+            s_move = '{}:{}:{}\n'.format('V' if is_vert else 'H', row, col)
+            self.new_moves[1 - player].append(s_move)
+            self.history.append((self.players[player], move))
 
         boxes = []
         if is_vert:
@@ -72,6 +79,7 @@ class Game:
             self.count[r][c] += 1
             if self.count[r][c] == 4:
                 self.scores[player] += 1
+                self.history.append((self.players[player], ('', r, c)))
                 next_player = player
                 self.remaining_boxes -= 1
 
@@ -96,3 +104,6 @@ class Game:
         t = self.new_moves[player]
         self.new_moves[player] = []
         return t
+
+    def get_history(self):
+        return {'size': self.size, 'players': self.players, 'history': self.history}
