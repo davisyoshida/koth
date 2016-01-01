@@ -81,7 +81,7 @@ class Tournament(object):
             move = yield from procs[player].send_receive(b'MOVE\n')
             if not move:
                 winner = 1 - player
-                print("Disqualified: {}".format(player))
+                print("Disqualified: {}".format(names[player]))
                 continue
 
             try:
