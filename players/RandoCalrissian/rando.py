@@ -1,11 +1,7 @@
 import random
-import sys
 
 if __name__ == "__main__":
-    i = input()
-    with open(sys.argv[1] + '.log', 'a') as f:
-        f.write("Init: " + i + '\n')
-    setup = i.strip().split(':')
+    setup = input().strip().split(':')
     size = int(setup[0])
     whoami = int(setup[1])
 
@@ -14,8 +10,6 @@ if __name__ == "__main__":
     try:
         while True:
             line = input().strip()
-            with open(sys.argv[1] + '.log', 'a') as f:
-                f.write("line: " + line + '\n')
             if line.strip() == 'MOVE':
                 the_move = random.choice(list(moves))
                 moves.remove(the_move)
