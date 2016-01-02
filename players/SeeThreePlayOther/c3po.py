@@ -1,7 +1,6 @@
 from collections import defaultdict
 import itertools
 import random
-import sys
 
 
 class C3PO:
@@ -37,12 +36,17 @@ class C3PO:
             move, = self.box_to_sides[box]
             return move
         else:
-            for box in itertools.chain(self.count_to_boxes[1], self.count_to_boxes[0]):
-                for side in self.box_to_sides[box]:
-                    if all(self.box_to_count[box] != 2 for box in self.side_to_boxes[side]):
-                        return side
+            for count in [1, 0]:
+                for box in sorted(self.count_to_boxes[count], key=shuffle_key):
+                    for side in sorted(self.box_to_sides[box], key=shuffle_key):
+                        if all(self.box_to_count[box] != 2 for box in self.side_to_boxes[side]):
+                            return side
 
         return random.choice(tuple(self.side_to_boxes))
+
+
+def shuffle_key(*args):
+    return random.random()
 
 if __name__ == "__main__":
     setup = input().strip().split(':')
