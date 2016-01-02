@@ -1,3 +1,3 @@
 RandoCalrissian,python,players/RandoCalrissian/rando.py
-RandoCalrissian-2,python,players/RandoCalrissian/rando.py
 Chewboxxa,python,players/Chewboxxa/chewboxxa.py
+SeeThreePlayOther,python,players/SeeThreePlayOther/c3po.py

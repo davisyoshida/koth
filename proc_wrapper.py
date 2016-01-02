@@ -20,7 +20,7 @@ class IOProcess(object):
 
     @asyncio.coroutine
     def start(self):
-        create = asyncio.create_subprocess_exec(*self.arglist, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        create = asyncio.create_subprocess_exec(*self.arglist, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=None)
         self.proc = yield from create
         for s in self.setup:
             self.proc.stdin.write(s)

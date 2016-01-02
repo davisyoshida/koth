@@ -51,7 +51,7 @@ class Game:
             raise ValueError("Invalid move: {}:{}:{}".format(is_vert, row, col))
 
         if (is_vert, row, col) in self.moves:
-            raise ValueError("Move in occupied space")
+            raise ValueError("Move in occupied space: {}, {}, {}".format(is_vert, row, col))
         else:
             move = is_vert, row, col
             self.moves.add(move)
